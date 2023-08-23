@@ -1,6 +1,6 @@
 import os
 import pickle
-
+from tkinter import PhotoImage
 import tkinter as tk
 from tkinter import messagebox
 import face_recognition
@@ -24,8 +24,8 @@ def get_button(window, text, color, command, fg='white'):
 
 
 def get_img_label(window):
-    label = tk.Label(window)
-    label.grid(row=0, column=0)
+    label = tk.Label(window,borderwidth=2, relief="solid")
+    label.place(x=30, y=90,width=640, height=475)
     return label
 
 
@@ -45,30 +45,13 @@ def get_entry_text(window):
 def msg_box(title, description):
     messagebox.showinfo(title, description)
 
+def image(window):
+    image_path = "C:/Users/akash/OneDrive/Documents/College/deeplearning/FacialRecognitionProject/logo.png"  
+    image = PhotoImage(file=image_path)
 
-def recognize(img, db_path):
-    # it is assumed there will be at most 1 match in the db
+    # Create a label to display the image
+    image_label = tk.Label(window, image=image)
+    image_label.pack()
+    return image_label
 
-    embeddings_unknown = face_recognition.face_encodings(img)
-    if len(embeddings_unknown) == 0:
-        return 'no_persons_found'
-    else:
-        embeddings_unknown = embeddings_unknown[0]
 
-    db_dir = sorted(os.listdir(db_path))
-
-    match = False
-    j = 0
-    while not match and j < len(db_dir):
-        path_ = os.path.join(db_path, db_dir[j])
-
-        file = open(path_, 'rb')
-        embeddings = pickle.load(file)
-
-        match = face_recognition.compare_faces([embeddings], embeddings_unknown)[0]
-        j += 1
-
-    if match:
-        return db_dir[j - 1][:-7]
-    else:
-        return 'unknown_person'
