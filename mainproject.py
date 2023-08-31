@@ -10,8 +10,8 @@ from tkinter import messagebox
 import numpy as np
 import pandas as pd
 import customtkinter
-import time
 import cv2
+
 class App:
     def __init__(self):
         self.flag=False
@@ -29,7 +29,7 @@ class App:
         self.conn = sqlite3.connect("C:/Users/akash/OneDrive/Documents/College/deeplearning/FacialRecognitionProject/maindatabase")
         self.c = self.conn.cursor()
         self.d = self.conn.cursor()
-        # Create a users table if not exists
+        self.e=self.conn.cursor()
         self.c.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY,username TEXT, face_descriptor TEXT)")
         self.d.execute("CREATE TABLE IF NOT EXISTS logs (id INTEGER ,logintime_time DATETIME,logouttime_time DATETIME)")
         self.image_pathnew = "C:/Users/akash/OneDrive/Documents/College/deeplearning/FacialRecognitionProject/first.png"  
@@ -41,7 +41,6 @@ class App:
         
         self.login_button_first_window=customtkinter.CTkButton(master=self.first_window, text="Proceed", command=self.main,height=80,width=325,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
         self.login_button_first_window.place(x=375, y=255)
-        
     def main(self):
         self.main_window= tk.Toplevel(self.first_window)
         self.main_window.geometry("1100x600+350+100")
@@ -152,10 +151,10 @@ class App:
 
     # Draw a rectangle around the faces
         for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 3)
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 128, 0), 3)
             self.roi_gray = gray[y:y+h, x:x+w]
             self.roi_color = frame[y:y+h, x:x+w]
-            cv2.putText(frame,'PROCEED',(x, y-6), self.font, 2,(0, 128, 0),2)
+            cv2.putText(frame,'PROCEED',(x, y-6), self.font, 2,(255,0, 0),2)
             img_ = cv2.cvtColor(self.most_recent_capture_arr, cv2.COLOR_BGR2RGB)
             self.most_recent_capture_pil = Image.fromarray(img_)
             imgtk = ImageTk.PhotoImage(image=self.most_recent_capture_pil)
@@ -181,7 +180,7 @@ class App:
         self.adminpass = customtkinter.CTkEntry(self.checkadmin_newwindow,width=380, font=('Sans-serif', 18),corner_radius=20,placeholder_text="",bg_color="#7BC2FF",fg_color="#224957",show="*")
         self.adminpass.place(x=368, y=335)
 
-        self.accept_button_admincheck = customtkinter.CTkButton(master=self.checkadmin_newwindow, text="Login", command=self.admin,height=50,width=275,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
+        self.accept_button_admincheck = customtkinter.CTkButton(master=self.checkadmin_newwindow, text="Login", command=self.check,height=50,width=275,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
         self.accept_button_admincheck.place(x=415, y=410)
         
         
@@ -204,27 +203,31 @@ class App:
         self.image_label2.place(x=0, y=0, width=1100, height=600)
         self.accept_button_admin_newwindow = customtkinter.CTkButton(master=self.admin_newwindow, text="Register New User", command=self.reg,height=50,width=275,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
         self.accept_button_admin_newwindow.place(x=400, y=105)
-        self.logs_window = customtkinter.CTkButton(master=self.admin_newwindow, text="Download Logs", command=self.logs,height=50,width=285,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
+        self.logs_window = customtkinter.CTkButton(master=self.admin_newwindow, text="Download Logs", command=self.log_window,height=50,width=285,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
         self.logs_window.place(x=400, y=245)
-        self.deluser_window=customtkinter.CTkButton(master=self.admin_newwindow, text="Remove Employe", command=self.deluser,height=50,width=285,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
+        self.deluser_window=customtkinter.CTkButton(master=self.admin_newwindow, text="Remove Employee", command=self.deluser,height=50,width=285,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
         self.deluser_window.place(x=400, y=395)
 
     def deluser(self):
         self.checkadmin_newwindow.destroy()
         self.deleteuserwindow=tk.Toplevel(self.first_window)
         self.deleteuserwindow.geometry("1100x600+350+100")
-        self.text_label_del = util.get_text_label(self.deleteuserwindow, 'Enter EmpID to be deleted')
-        self.text_label_del.place(x=390, y=90)
-        self.delusername = tk.Entry(self.deleteuserwindow,width=20, font=('Sans-serif', 15))
-        self.delusername.place(x=430, y=200)
-        self.accept_button_delete = util.get_button(self.deleteuserwindow, 'Submit', 'green', self.delete)
-        self.accept_button_delete.place(x=415, y=315)
+        self.image_path3 = "C:/Users/akash/OneDrive/Documents/College/deeplearning/FacialRecognitionProject/del.png"  
+        self.image3 = PhotoImage(file=self.image_path3)
+        self.image_label3 = tk.Label(self.deleteuserwindow, image=self.image3)
+        self.image_label3.pack()
+        self.image_label3.place(x=0, y=0, width=1100, height=600)
+        self.delusername = customtkinter.CTkEntry(self.deleteuserwindow,width=380, font=('Sans-serif', 18),corner_radius=20,placeholder_text="",bg_color="#7BC2FF",fg_color="#224957")
+        self.delusername.place(x=380, y=265)
+        self.accept_button_delete = customtkinter.CTkButton(master=self.deleteuserwindow, text="Delete", command=self.delete,height=50,width=275,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
+        self.accept_button_delete.place(x=415, y=415)
         
     def delete(self):
+        self.main_window.destroy()
         self.c.execute("SELECT rowid FROM users WHERE id = ?", (self.delusername.get(),))
         self.del_result=self.c.fetchone()
         if (self.del_result is None): 
-            messagebox.showinfo("Error","No such ID exists")
+            messagebox.showinfo("Error","No such ID exists",parent=self.deleteuserwindow)
             return
         else:
             self.c.execute('DELETE FROM users WHERE id=?',(self.delusername.get(),))
@@ -253,60 +256,64 @@ class App:
                         self.face_descriptor_str = ','.join(str(e) for e in self.face_descriptor)
                         break
                     except IndexError:
-                        messagebox.showinfo("Error", "No valid face found")
                         break
                     except AttributeError:
-                        messagebox.showinfo("Error", "No valid face found")
-                    
+                        break
                 for user in users:
                     self.stored_face_descriptor = np.array([float(e) for e in user[2].split(',')])
                     self.distance = np.linalg.norm(self.face_descriptor - self.stored_face_descriptor)
-                    if self.distance < 0.6:  # Adjust this threshold based on your needs
+                    if self.distance < 0.4:  # Adjust this threshold based on your needs
                         messagebox.showinfo("Success", f"Logged in as {user[0]} at {self.current_time}",parent=self.main_window)
                         
                         formatted_date = self.current_time.strftime('%Y-%m-%d %H:%M:%S')
                         self.d.execute("INSERT INTO logs (id,logintime_time) VALUES (?,?)", (user[1],formatted_date))
                         self.conn.commit()
                         return
-                        
+                messagebox.showinfo("Error", "No valid face found",parent=self.main_window)  
                 return
         else:
-            messagebox.showinfo("Error","No users registered",parent=self.main_window)
+            messagebox.showinfo("Error","No valid face found",parent=self.main_window)
+        
 
     def logout(self):
-
-        ret, frame = self.cap.read()
-        self.current_time = datetime.datetime.now()
-        self.most_recent_capture_arr = frame
-        while True:
-            self.gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            self.dets = self.face_detector(self.gray,1)
+        self.c.execute("SELECT username,id,face_descriptor FROM users")
+        users = self.c.fetchall()
+        if not users:
+            messagebox.showinfo("Error","No users registered",parent=self.main_window)
+        if self.flag==True:
+            ret, frame = self.cap.read()
+            self.current_time = datetime.datetime.now()
+            self.most_recent_capture_arr = frame
             while True:
-                try:
-                    self.shape = self.shape_predictor(self.gray, self.dets[0])
-                    break
-                except IndexError:
-                    messagebox.showinfo("Error", "No valid face found")
-                    break
-                
-            self.face_descriptor = self.face_recognizer.compute_face_descriptor(frame, self.shape)
-            self.face_descriptor_str = ','.join(str(e) for e in self.face_descriptor)
-                
-            self.c.execute("SELECT username,id,face_descriptor FROM users")
-            users = self.c.fetchall()
-                
-            for user in users:
-                self.stored_face_descriptor = np.array([float(e) for e in user[2].split(',')])
-                self.distance = np.linalg.norm(self.face_descriptor - self.stored_face_descriptor)
-                if self.distance < 0.6:  # Adjust this threshold based on your needs
-                    messagebox.showinfo("Success", f"Logged out as {user[0]} at {self.current_time}",parent=self.main_window)
-                    formatted_date = self.current_time.strftime('%Y-%m-%d %H:%M:%S')
-                
-                    self.d.execute("INSERT INTO logs (id,logouttime_time) VALUES (?,?)", (user[1],formatted_date))
-                    self.conn.commit()
-                    return
-            return
-
+                self.gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                self.dets = self.face_detector(self.gray,1)
+                while True:
+                    try:
+                        self.shape = self.shape_predictor(self.gray, self.dets[0])
+                        self.face_descriptor = self.face_recognizer.compute_face_descriptor(frame, self.shape)
+                        self.face_descriptor_str = ','.join(str(e) for e in self.face_descriptor)
+                        break
+                    except IndexError:
+                        break
+                    except AttributeError:
+                            break
+                    
+                self.c.execute("SELECT username,id,face_descriptor FROM users")
+                users = self.c.fetchall()
+                    
+                for user in users:
+                    self.stored_face_descriptor = np.array([float(e) for e in user[2].split(',')])
+                    self.distance = np.linalg.norm(self.face_descriptor - self.stored_face_descriptor)
+                    if self.distance < 0.4:  # Adjust this threshold based on your needs
+                        messagebox.showinfo("Success", f"Logged out as {user[0]} at {self.current_time}",parent=self.main_window)
+                        formatted_date = self.current_time.strftime('%Y-%m-%d %H:%M:%S')
+                    
+                        self.d.execute("INSERT INTO logs (id,logouttime_time) VALUES (?,?)", (user[1],formatted_date))
+                        self.conn.commit()
+                        return
+                return
+        else:
+            messagebox.showinfo("Error","No valid face found",parent=self.main_window)
     def add_img_to_label(self, label):
 
         imgtk = ImageTk.PhotoImage(image=self.most_recent_capture_pil)
@@ -336,7 +343,30 @@ class App:
         messagebox.showinfo("Success","Logs exported")
         self.checkadmin_newwindow.destroy()
         self.admin_newwindow.destroy()
-
+        self.main_window.destroy()
+    
+    def user(self):
+        query = "SELECT id,username FROM users"
+        df = pd.read_sql(query, self.conn)
+        df.to_excel("C:/Users/akash/Desktop/data/users.xlsx")
+        messagebox.showinfo("Success","Logs exported")
+        self.checkadmin_newwindow.destroy()
+        self.admin_newwindow.destroy()
+    def log_window(self):
+        
+        self.log_newwindow= tk.Toplevel(self.first_window)
+        self.log_newwindow.geometry("1100x600+350+100")
+        self.image_pathl = "C:/Users/akash/OneDrive/Documents/College/deeplearning/FacialRecognitionProject/logs.png"  
+        self.imagel = PhotoImage(file=self.image_pathl)
+        self.image_labell = tk.Label(self.log_newwindow, image=self.imagel)
+        self.image_labell.pack()
+        self.image_labell.place(x=0, y=0, width=1100, height=600)
+        self.accept_button_log_newwindow = customtkinter.CTkButton(master=self.log_newwindow, text="Download Login/Logout Info", command=self.logs,height=50,width=325,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
+        self.accept_button_log_newwindow.place(x=330, y=205)
+        self.logs_window = customtkinter.CTkButton(master=self.log_newwindow, text="Download Users", command=self.user,height=50,width=325,font=('Sans-serif', 30),corner_radius=20,hover=True,border_width=1,border_color="black",bg_color="#7BC2FF",fg_color="#109945")
+        self.logs_window.place(x=380, y=345)
+        
 if __name__ == "__main__":
     app = App()
     app.start()
+    
